@@ -55,7 +55,7 @@ dependencies:
 
  
 flutter_launcher_icons:
-  image_path: "assets/icons/city.png" 
+  image_path: "assets/icons/apicon.png" 
   android: true
   ios: true
   # optionally, as transparency is not allowed on app store

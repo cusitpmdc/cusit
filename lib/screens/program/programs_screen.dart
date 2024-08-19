@@ -1,4 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
 
+import 'package:cusit/screens/dashboard/widgets/pdfview_screen.dart';
+import 'package:cusit/services/pdfservice.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -11,13 +14,15 @@ class ProgramsFeeScreen extends StatefulWidget {
 }
 
 class _ProgramsFeeScreenState extends State<ProgramsFeeScreen> {
-  late WebViewController controller;
+   late WebViewController _webViewController;
   bool isLoading = true;
+
   @override
   void initState() {
     super.initState();
-    controller = WebViewController()
-     ..setJavaScriptMode(JavaScriptMode.unrestricted) // Ensure JavaScript is enabled
+
+    _webViewController = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (url) {
@@ -29,13 +34,16 @@ class _ProgramsFeeScreenState extends State<ProgramsFeeScreen> {
             setState(() {
               isLoading = false;
             });
+
+            // Check for PDF links in the URL
+            if (url.endsWith('.pdf')) {
+              _handlePdfLink(url);
+            }
           },
-          
           onWebResourceError: (error) {
             setState(() {
               isLoading = false;
             });
-         
           },
         ),
       )
@@ -44,23 +52,27 @@ class _ProgramsFeeScreenState extends State<ProgramsFeeScreen> {
       );
   }
 
+  void _handlePdfLink(String pdfUrl) async {
+    try {
+      final pdfFile = await PDFService.loadPDFFromNetwork(pdfUrl);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PdfViewScreen(file: pdfFile, num: 0),
+        ),
+      );
+    } catch (e) {
+      // Handle any errors (e.g., show an error message to the user)
+      print("Error loading PDF: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        // appBar: AppBar(
-        //   backgroundColor: AppColors.cusitclr,
-        //   elevation: 0,
-        //   foregroundColor: AppColors.white,
-        //   title: Image.asset(
-        //     'assets/icons/Logowb.png',
-        //     width: context.width * 0.3,
-        //     height: context.height * 0.2,
-        //   ),
-        //   centerTitle: true,
-        // ),
         body: WebViewWidget(
-          controller: controller,
+          controller: _webViewController,
         ),
       ),
     );
