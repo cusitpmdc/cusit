@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "838853432656",
+    "project_id": "cusit-info",
+    "storage_bucket": "cusit-info.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:838853432656:android:350d5cf93077a88a6f4855",
+        "android_client_info": {
+          "package_name": "com.cusit.cusitinfo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjSbxCeoZjAlHzGcX8eSjk3ql9OUIaJYs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
