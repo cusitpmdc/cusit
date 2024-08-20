@@ -63,7 +63,6 @@ class _ProgramsFeeScreenState extends State<ProgramsFeeScreen> {
       );
     } catch (e) {
       // Handle any errors (e.g., show an error message to the user)
-      print("Error loading PDF: $e");
     }
   }
 
