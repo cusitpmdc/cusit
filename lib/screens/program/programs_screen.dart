@@ -14,7 +14,7 @@ class ProgramsFeeScreen extends StatefulWidget {
 }
 
 class _ProgramsFeeScreenState extends State<ProgramsFeeScreen> {
-   late WebViewController _webViewController;
+  late WebViewController _webViewController;
   bool isLoading = true;
 
   @override
@@ -25,6 +25,13 @@ class _ProgramsFeeScreenState extends State<ProgramsFeeScreen> {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
+          onNavigationRequest: (NavigationRequest request) {
+            if (request.url.endsWith('.pdf')) {
+              _handlePdfLink(request.url);
+              return NavigationDecision.prevent;  // Prevent the WebView from loading the PDF link
+            }
+            return NavigationDecision.navigate;  // Allow the WebView to load the URL
+          },
           onPageStarted: (url) {
             setState(() {
               isLoading = true;
@@ -34,11 +41,6 @@ class _ProgramsFeeScreenState extends State<ProgramsFeeScreen> {
             setState(() {
               isLoading = false;
             });
-
-            // Check for PDF links in the URL
-            if (url.endsWith('.pdf')) {
-              _handlePdfLink(url);
-            }
           },
           onWebResourceError: (error) {
             setState(() {
@@ -63,6 +65,9 @@ class _ProgramsFeeScreenState extends State<ProgramsFeeScreen> {
       );
     } catch (e) {
       // Handle any errors (e.g., show an error message to the user)
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to load PDF')),
+      );
     }
   }
 
@@ -70,8 +75,12 @@ class _ProgramsFeeScreenState extends State<ProgramsFeeScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: WebViewWidget(
-          controller: _webViewController,
+        body: Stack(
+          children: [
+            WebViewWidget(controller: _webViewController),
+            if (isLoading)
+             Image.asset("assets/images/loading.gif"),
+          ],
         ),
       ),
     );
