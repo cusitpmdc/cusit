@@ -1,5 +1,6 @@
 import 'package:cusit/extensions/aspect_ratio_extension.dart';
 import 'package:cusit/screens/admission/admission_screen.dart';
+import 'package:cusit/screens/chat/chat_screen.dart';
 import 'package:cusit/screens/dashboard/drawer_screen.dart';
 import 'package:cusit/screens/dashboard/widgets/dashbuttons.dart';
 import 'package:cusit/screens/program/programs_screen.dart';
@@ -32,6 +33,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
           height: context.height * 0.2,
         ),
         centerTitle: true,
+        actions: [
+         Padding(
+            padding: EdgeInsets.only(right: context.width * 0.03),
+            child: IconButton(
+              icon: const Icon(Icons.chat),
+              onPressed: () {
+                Navigator.of(context).pushNamed(ChatScreen.id);
+              },
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Center(
