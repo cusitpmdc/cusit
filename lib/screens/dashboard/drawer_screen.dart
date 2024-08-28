@@ -1,5 +1,6 @@
 import 'package:cusit/extensions/aspect_ratio_extension.dart';
 import 'package:cusit/screens/admission/admission_screen.dart';
+import 'package:cusit/screens/auth/staff_login_screen.dart';
 import 'package:cusit/screens/dashboard/dashboard_screen.dart';
 import 'package:cusit/screens/program/programs_screen.dart';
 import 'package:cusit/screens/prospectus/prospectus_screen.dart';
@@ -131,6 +132,24 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 ),
               ),
             ),
+             InkWell(
+              onTap: () {
+                Navigator.pushNamed(context, LoginScreen.id);
+              },
+              child: ListTile(
+                leading: Icon(
+                  Icons.person,
+                  size: 15.r,
+                  color: AppColors.white,
+                ),
+                title: Text(
+                  'Staff',
+                  style: TextStyle(
+                      color: AppColors.white, fontSize: AppDimensions.small),
+                ),
+              ),
+            ),
+            
           ],
         ),
       ),

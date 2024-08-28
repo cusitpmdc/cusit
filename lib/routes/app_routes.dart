@@ -1,7 +1,6 @@
 import 'package:cusit/screens/auth/splash_screen.dart';
 import 'package:cusit/screens/auth/upgradeappscreen.dart';
 import 'package:cusit/screens/admission/admission_screen.dart';
-import 'package:cusit/screens/chat/chat_screen.dart';
 import 'package:cusit/screens/dashboard/dashboard_screen.dart';
 import 'package:cusit/screens/program/programs_screen.dart';
 import 'package:cusit/screens/prospectus/prospectus_screen.dart';
@@ -15,6 +14,6 @@ class AppRoutes {
     AdmissionScreen.id: (context) => const AdmissionScreen(),
     ProspectusScreen.id: (context) => const ProspectusScreen(),
     ProgramsFeeScreen.id: (context) => const ProgramsFeeScreen(),
-    ChatScreen.id: (context) => const ChatScreen(),
+    
   };
 }

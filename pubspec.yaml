@@ -54,6 +54,8 @@ dependencies:
   flutter_downloader: ^1.11.6
   firebase_storage: ^11.0.0
   image_picker: ^1.0.0
+  firebase_auth: ^4.16.0
+  uuid: ^3.0.5
 
  
 flutter_launcher_icons:
