@@ -81,16 +81,26 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       body: Column(
         children: [
-           Image.asset(
-          'assets/icons/Logo.png',
-          width: context.width * 0.3,
-          height: context.height * 0.2,
-        ),
           Expanded(
-            child: ListView.builder(
-              reverse: false, // To start from the bottom of the list
-              itemCount: messages.length,
-              itemBuilder: (context, index) => buildMessage(messages[index]),
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.all(context.width * 0.03),
+                    child: Image.asset(
+                      'assets/icons/city.png',
+                      width: context.width * 0.2,
+                      height: context.height * 0.2,
+                    ),
+                  ),
+                ),
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) => buildMessage(messages[index]),
+                    childCount: messages.length,
+                  ),
+                ),
+              ],
             ),
           ),
           Padding(
