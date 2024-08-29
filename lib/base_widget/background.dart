@@ -27,7 +27,7 @@ class Background extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(context.height * 10)),
-                  color: AppColors.cusitclr2,
+                  color: AppColors.cusitclr,
                 ),
               )
               // Image.asset(
@@ -45,7 +45,7 @@ class Background extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(context.height * 10)),
-                  color: AppColors.cusitclr2,
+                  color: AppColors.cusitclr,
                 ),
               )
               // Image.asset(
@@ -59,7 +59,7 @@ class Background extends StatelessWidget {
             child: Image.asset(
               "assets/images/login_bottom.png",
               width: context.width * 0.35,
-              color: AppColors.dbrown,
+              color: AppColors.cusitclr,
             ),
           ),
           child,

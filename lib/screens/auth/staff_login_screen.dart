@@ -1,7 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:cusit/base_widget/background.dart';
 import 'package:cusit/extensions/aspect_ratio_extension.dart';
-import 'package:cusit/screens/dashboard/dashboard_screen.dart';
+import 'package:cusit/screens/chat/staff/staffdashboard_screen.dart';
 import 'package:cusit/utils/app_colors.dart';
 import 'package:cusit/utils/app_dimensions.dart';
 import 'package:flutter/gestures.dart';
@@ -10,13 +11,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/cupertino.dart';
 
-
 class LoginScreen extends StatefulWidget {
+  static const String id = 'stafflogin_screen';
+
   const LoginScreen({Key? key}) : super(key: key);
-  static const String id = 'login_screen';
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -44,8 +45,8 @@ class _LoginScreenState extends State<LoginScreen> {
         prefs.setString('loginTime', DateTime.now().toIso8601String());
         prefs.setString('userId', user.uid); // Store the user ID
 
-        Navigator.of(context)
-            .pushReplacementNamed(DashboardScreen.id); // Navigate to dashboard
+        Navigator.pushReplacementNamed(
+            context, StaffDashBoardScreen.id); // Navigate to dashboard
       }
     } on FirebaseAuthException catch (e) {
       String message;
@@ -82,166 +83,184 @@ class _LoginScreenState extends State<LoginScreen> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              "assets/icons/logon.png",
-              width: context.width * 0.4,
-              height: context.height * 0.17,
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: context.width * 0.1),
-              child: SingleChildScrollView(
-                child: Form(
-                  key: _formKey,
-                  child: StreamBuilder<Object>(
-                      stream: null,
-                      builder: (context, snapshot) {
-                        return Column(
-                          children: [
-                            TextFormField(
-                              style: TextStyle(
-                                  fontSize: AppDimensions.normal,
-                                  color: AppColors.dblue),
-                              controller: emailController,
-                              decoration: const InputDecoration(
-                                fillColor: Colors.transparent,
-                                filled: true,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(5),
+        body: Background(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                "assets/icons/city.png",
+                width: context.width * 0.4,
+                height: context.height * 0.17,
+              ),
+              SizedBox(
+                height: context.height * 0.05,
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: context.width * 0.1),
+                child: SingleChildScrollView(
+                  child: Form(
+                    key: _formKey,
+                    child: StreamBuilder<Object>(
+                        stream: null,
+                        builder: (context, snapshot) {
+                          return Column(
+                            children: [
+                              TextFormField(
+                                style: TextStyle(
+                                    fontSize: AppDimensions.normal,
+                                    color: AppColors.dblue),
+                                controller: emailController,
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
+                                decoration: const InputDecoration(
+                                  fillColor: Colors.transparent,
+                                  filled: true,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(5),
+                                    ),
                                   ),
-                                ),
-                                labelText: 'Email',
-                                prefixIcon: Icon(
-                                  Icons.email,
-                                  color: AppColors.dblue,
-                                ),
-                              ),
-                              keyboardType: TextInputType.emailAddress,
-                              validator: (value) {
-                                if (value!.trim().isEmpty) {
-                                  return 'Please enter your email';
-                                }
-                                if (!RegExp(
-                                        r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
-                                    .hasMatch(value)) {
-                                  return 'Please enter a valid email';
-                                }
-                                return null;
-                              },
-                            ),
-                            SizedBox(height: size.height * 0.02),
-                            TextFormField(
-                              style: TextStyle(
-                                  fontSize: AppDimensions.normal,
-                                  color: AppColors.dblue),
-                              controller: passwordController,
-                              decoration: InputDecoration(
-                                fillColor: Colors.transparent,
-                                filled: true,
-                                border: const OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(5),
-                                  ),
-                                ),
-                                prefixIcon: const Icon(
-                                  Icons.lock,
-                                  color: AppColors.dblue,
-                                ),
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    _passwordVisible
-                                        ? Icons.visibility_off
-                                        : Icons.visibility,
+                                  labelText: 'Email',
+                                  prefixIcon: Icon(
+                                    Icons.email,
                                     color: AppColors.dblue,
                                   ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _passwordVisible = !_passwordVisible;
-                                    });
-                                  },
                                 ),
-                                labelText: 'Password',
+                                keyboardType: TextInputType.emailAddress,
+                                validator: (value) {
+                                  if (value!.trim().isEmpty) {
+                                    return 'Please enter your email';
+                                  }
+                                  if (!RegExp(
+                                          r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+                                      .hasMatch(value)) {
+                                    return 'Please enter a valid email';
+                                  }
+                                  return null;
+                                },
+                                onChanged: (value) {
+                                  setState(
+                                      () {}); // Rebuild to update validation
+                                },
                               ),
-                              obscureText: !_passwordVisible,
-                              validator: (value) {
-                                if (value!.trim().isEmpty) {
-                                  return 'Please enter your password';
-                                }
-                                return null;
-                              },
-                            ),
-                           
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: context.height * 0.005),
-                              child: ElevatedButton(
-                                onPressed: _login,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.dblue,
-                                  elevation: 0,
-                                  textStyle: const TextStyle(
-                                      fontWeight: FontWeight.bold),
+                              SizedBox(height: size.height * 0.02),
+                              TextFormField(
+                                style: TextStyle(
+                                    fontSize: AppDimensions.normal,
+                                    color: AppColors.dblue),
+                                controller: passwordController,
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
+                                decoration: InputDecoration(
+                                  fillColor: Colors.transparent,
+                                  filled: true,
+                                  border: const OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(5),
+                                    ),
+                                  ),
+                                  prefixIcon: const Icon(
+                                    Icons.lock,
+                                    color: AppColors.dblue,
+                                  ),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      _passwordVisible
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                      color: AppColors.dblue,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _passwordVisible = !_passwordVisible;
+                                      });
+                                    },
+                                  ),
+                                  labelText: 'Password',
                                 ),
-                                child: Padding(
-                                  padding:
-                                      EdgeInsets.all(context.height * 0.013),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        'Login',
-                                        style: TextStyle(
-                                          color: AppColors.white,
-                                          fontSize: AppDimensions.normal,
+                                obscureText: !_passwordVisible,
+                                validator: (value) {
+                                  if (value!.trim().isEmpty) {
+                                    return 'Please enter your password';
+                                  }
+                                  return null;
+                                },
+                                onChanged: (value) {
+                                  setState(
+                                      () {}); // Rebuild to update validation
+                                },
+                              ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: context.height * 0.03),
+                                child: ElevatedButton(
+                                  onPressed: _login,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.dblue,
+                                    elevation: 0,
+                                    textStyle: const TextStyle(
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  child: Padding(
+                                    padding:
+                                        EdgeInsets.all(context.height * 0.013),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'Login',
+                                          style: TextStyle(
+                                            color: AppColors.white,
+                                            fontSize: AppDimensions.normal,
+                                          ),
                                         ),
-                                      ),
-                                      _loginIndicator
-                                          ? Padding(
-                                              padding:
-                                                  EdgeInsets.only(left: 8.0),
-                                              child: CupertinoActivityIndicator(
-                                                color: AppColors.white,
-                                                radius: 8.5,
-                                              ),
-                                            )
-                                          : const SizedBox.shrink(),
-                                    ],
+                                        _loginIndicator
+                                            ? const Padding(
+                                                padding:
+                                                    EdgeInsets.only(left: 8.0),
+                                                child:
+                                                    CupertinoActivityIndicator(
+                                                  color: AppColors.white,
+                                                  radius: 8.5,
+                                                ),
+                                              )
+                                            : const SizedBox.shrink(),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            SizedBox(height: size.height * 0.015),
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: 'For any query email us at ',
-                                    style: TextStyle(color: AppColors.black),
-                                  ),
-                                  TextSpan(
-                                    text: 'culms@cusit.edu.pk',
-                                    style:
-                                        const TextStyle(color: AppColors.dbrown),
-                                    recognizer: TapGestureRecognizer()
-                                      ..onTap = () {
-                                        // Add email functionality
-                                      },
-                                  ),
-                                ],
+                              SizedBox(height: size.height * 0.015),
+                              RichText(
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: 'For any query email us at ',
+                                      style: TextStyle(color: AppColors.black),
+                                    ),
+                                    TextSpan(
+                                      text: 'culms@cusit.edu.pk',
+                                      style: const TextStyle(
+                                          color: AppColors.dbrown),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () {
+                                          // Add email functionality
+                                        },
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        );
-                      }),
+                            ],
+                          );
+                        }),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

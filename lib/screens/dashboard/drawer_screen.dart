@@ -71,13 +71,13 @@ class _DrawerScreenState extends State<DrawerScreen> {
               child: ListTile(
                 leading: Icon(
                   Icons.dashboard_sharp,
-                  size: 15.r,
+                  size: 16.r,
                   color: AppColors.white,
                 ),
                 title: Text(
                   'Dashboard',
                   style: TextStyle(
-                      color: AppColors.white, fontSize: AppDimensions.small),
+                      color: AppColors.white, fontSize: AppDimensions.normal),
                 ),
               ),
             ),
@@ -88,13 +88,13 @@ class _DrawerScreenState extends State<DrawerScreen> {
               child: ListTile(
                 leading: Icon(
                   Icons.file_copy,
-                  size: 15.r,
+                  size: 16.r,
                   color: AppColors.white,
                 ),
                 title: Text(
                   'Apply for Admission',
                   style: TextStyle(
-                      color: AppColors.white, fontSize: AppDimensions.small),
+                      color: AppColors.white, fontSize: AppDimensions.normal),
                 ),
               ),
             ),
@@ -105,13 +105,13 @@ class _DrawerScreenState extends State<DrawerScreen> {
               child: ListTile(
                 leading: Icon(
                   Icons.folder,
-                  size: 15.r,
+                  size: 16.r,
                   color: AppColors.white,
                 ),
                 title: Text(
                   'View Prospectus',
                   style: TextStyle(
-                      color: AppColors.white, fontSize: AppDimensions.small),
+                      color: AppColors.white, fontSize: AppDimensions.normal),
                 ),
               ),
             ),
@@ -121,31 +121,32 @@ class _DrawerScreenState extends State<DrawerScreen> {
               },
               child: ListTile(
                 leading: Icon(
-                  Icons.folder,
-                  size: 15.r,
+                  Icons.file_copy,
+                  size: 16.r,
                   color: AppColors.white,
                 ),
                 title: Text(
                   'Programs Offered/Fee',
                   style: TextStyle(
-                      color: AppColors.white, fontSize: AppDimensions.small),
+                      color: AppColors.white, fontSize: AppDimensions.normal),
                 ),
               ),
             ),
              InkWell(
               onTap: () {
+                Navigator.of(context).pop();
                 Navigator.pushNamed(context, LoginScreen.id);
               },
               child: ListTile(
                 leading: Icon(
                   Icons.person,
-                  size: 15.r,
+                  size: 16.r,
                   color: AppColors.white,
                 ),
                 title: Text(
                   'Staff',
                   style: TextStyle(
-                      color: AppColors.white, fontSize: AppDimensions.small),
+                      color: AppColors.white, fontSize: AppDimensions.normal),
                 ),
               ),
             ),
