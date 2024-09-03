@@ -17,7 +17,6 @@ class SplashScreen extends StatefulWidget {
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
-
 class _SplashScreenState extends State<SplashScreen> {
   bool updateAvailable = false;
 
@@ -51,10 +50,8 @@ class _SplashScreenState extends State<SplashScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await Future.delayed(const Duration(seconds: 3));
       await checkForUpdates();
-      if (updateAvailable) {
-        Navigator.pushReplacementNamed(context, UpgradeScreen.id);
-      } else {
-        Navigator.pushReplacementNamed(context, DashboardScreen.id);
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, updateAvailable ? UpgradeScreen.id : DashboardScreen.id);
       }
     });
   }

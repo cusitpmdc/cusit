@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cusit/base_widget/background.dart';
 import 'package:cusit/extensions/aspect_ratio_extension.dart';
 import 'package:cusit/screens/chat/staff/staffdashboard_screen.dart';
@@ -22,6 +23,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool invalidCredentials = false;
   final _formKey = GlobalKey<FormState>();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   TextEditingController idController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool _passwordVisible = false;
@@ -52,11 +54,14 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     loading = true;
-  }
+      }
+
+
+
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+ 
     return GestureDetector(
       onTap: () {
         FocusManager.instance.primaryFocus?.unfocus();
@@ -83,6 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         horizontal: context.width * 0.02),
                     child: Form(
                       key: _formKey,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       child: StreamBuilder<Object>(
                           stream: null,
                           builder: (context, snapshot) {
@@ -121,7 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     return null;
                                   },
                                 ),
-                                SizedBox(height: size.height * 0.02),
+                                SizedBox(height: context.height * 0.02),
                                 TextFormField(
                                   style: TextStyle(
                                       fontSize: AppDimensions.normal,
@@ -211,6 +217,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                                     .toIso8601String());
                                             prefs.setString('userId', user.uid);
 
+                                            // Store user data in Firestore
+                                            await _firestore
+                                                .collection('users')
+                                                .doc(user.uid)
+                                                .set({
+                                              'email': user.email,
+                                              'lastLogin': DateTime.now(),
+                                            });
+
                                             Navigator.of(context)
                                                 .pushReplacementNamed(
                                                     StaffDashBoardScreen.id);
@@ -295,7 +310,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(height: size.height * 0.015),
+                                SizedBox(height: context.height * 0.015),
                               ],
                             );
                           }),
@@ -313,7 +328,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   TextSpan(
                     text: 'culms@cusit.edu.pk',
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontWeight: FontWeight.bold, color: AppColors.white),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
