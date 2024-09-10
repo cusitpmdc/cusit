@@ -1,12 +1,12 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cusit/extensions/aspect_ratio_extension.dart';
 import 'package:cusit/screens/auth/upgradeappscreen.dart';
+import 'package:cusit/screens/chat/staff/staffdashboard_screen.dart';
 import 'package:cusit/screens/dashboard/dashboard_screen.dart';
 import 'package:cusit/utils/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';  // Firebase Auth import
 import 'package:package_info_plus/package_info_plus.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -17,9 +17,12 @@ class SplashScreen extends StatefulWidget {
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
+
 class _SplashScreenState extends State<SplashScreen> {
   bool updateAvailable = false;
+  bool isStaff = false;  // Boolean to track if the user is staff
 
+  // Check for updates in Firestore
   Future<void> checkForUpdates() async {
     try {
       final firestore = FirebaseFirestore.instance;
@@ -44,14 +47,44 @@ class _SplashScreenState extends State<SplashScreen> {
     }
   }
 
+  // Check if the user is logged in and determine if they are a staff member
+  Future<void> checkUserRole() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        // Check Firestore if the user is a staff member
+        final firestore = FirebaseFirestore.instance;
+        final snapshot = await firestore.collection('users').doc(user.uid).get();
+
+        if (snapshot.exists) {
+          final data = snapshot.data();
+          if (data != null && data['role'] == 'staff') {
+            setState(() {
+              isStaff = true;
+            });
+          }
+        }
+      }
+    } catch (e) {
+      log('ERROR CHECKING USER ROLE::: $e');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await Future.delayed(const Duration(seconds: 3));
       await checkForUpdates();
+      await checkUserRole();  // Check user role before navigating
       if (mounted) {
-        Navigator.pushReplacementNamed(context, updateAvailable ? UpgradeScreen.id : DashboardScreen.id);
+        if (updateAvailable) {
+          Navigator.pushReplacementNamed(context, UpgradeScreen.id);
+        } else if (isStaff) {
+          Navigator.pushReplacementNamed(context, StaffDashBoardScreen.id);  // Navigate to Staff Dashboard if staff
+        } else {
+          Navigator.pushReplacementNamed(context, DashboardScreen.id);  // Navigate to normal dashboard if not staff
+        }
       }
     });
   }

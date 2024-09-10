@@ -1,3 +1,4 @@
+import 'package:cusit/screens/models/schatmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,7 +12,7 @@ class GuestChatScreen extends StatefulWidget {
 
   final String staffId; // Add the staffId parameter to the constructor
 
-  const GuestChatScreen({Key? key, required this.staffId}) : super(key: key);
+  const GuestChatScreen({Key? key, required this.staffId, required Chat chat}) : super(key: key);
 
   @override
   State<GuestChatScreen> createState() => _GuestChatScreenState();

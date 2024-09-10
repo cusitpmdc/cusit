@@ -1,6 +1,6 @@
 import 'package:cusit/extensions/aspect_ratio_extension.dart';
 import 'package:cusit/screens/admission/admission_screen.dart';
-import 'package:cusit/screens/chat/user/chat_screen.dart';
+import 'package:cusit/screens/chat/user/guestchat_screen.dart';
 import 'package:cusit/screens/dashboard/drawer_screen.dart';
 import 'package:cusit/screens/dashboard/widgets/dashbuttons.dart';
 import 'package:cusit/screens/program/programs_screen.dart';
