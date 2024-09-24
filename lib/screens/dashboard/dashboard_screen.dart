@@ -18,6 +18,7 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  final String staffId = '1';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,12 +35,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
         centerTitle: true,
         actions: [
-         Padding(
+          Padding(
             padding: EdgeInsets.only(right: context.width * 0.03),
             child: IconButton(
               icon: const Icon(Icons.chat),
               onPressed: () {
-                Navigator.of(context).pushNamed(GuestChatScreen.id);
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const GuestChatScreen(staffId: '1'),
+                  ),
+                );
               },
             ),
           ),

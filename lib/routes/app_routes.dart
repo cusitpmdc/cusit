@@ -3,6 +3,7 @@ import 'package:cusit/screens/auth/staff_login_screen.dart';
 import 'package:cusit/screens/auth/upgradeappscreen.dart';
 import 'package:cusit/screens/admission/admission_screen.dart';
 import 'package:cusit/screens/chat/staff/staffdashboard_screen.dart';
+import 'package:cusit/screens/chat/user/guestchat_screen.dart';
 import 'package:cusit/screens/dashboard/dashboard_screen.dart';
 import 'package:cusit/screens/program/programs_screen.dart';
 import 'package:cusit/screens/prospectus/prospectus_screen.dart';
@@ -18,5 +19,8 @@ class AppRoutes {
     AdmissionScreen.id: (context) => const AdmissionScreen(),
     ProspectusScreen.id: (context) => const ProspectusScreen(),
     ProgramsFeeScreen.id: (context) => const ProgramsFeeScreen(),
+     GuestChatScreen.id: (context) => GuestChatScreen(
+          staffId: ModalRoute.of(context)!.settings.arguments as String,
+        ),
   };
 }

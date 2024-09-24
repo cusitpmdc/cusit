@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cusit/extensions/aspect_ratio_extension.dart';
 import 'package:cusit/screens/admission/admission_screen.dart';
 import 'package:cusit/screens/auth/staff_login_screen.dart';
@@ -5,6 +6,7 @@ import 'package:cusit/screens/dashboard/dashboard_screen.dart';
 import 'package:cusit/screens/program/programs_screen.dart';
 import 'package:cusit/screens/prospectus/prospectus_screen.dart';
 import 'package:cusit/utils/app_colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -21,13 +23,38 @@ class DrawerScreen extends StatefulWidget {
 }
 
 class _DrawerScreenState extends State<DrawerScreen> {
-  bool loading = false;
-  bool loginIndicator = false;
+  bool isStaff = false;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {});
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkUserRole();
+    });
+  }
+
+  Future<void> checkUserRole() async {
+    User? currentUser = FirebaseAuth.instance.currentUser; // Check current user
+
+    if (currentUser != null) {
+      // Fetch the user document from Firestore using the user's UID
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users') // Adjust this path to your Firestore structure
+          .doc(currentUser.uid)
+          .get();
+
+      if (userDoc.exists && userDoc.data() != null) {
+        // Check if the user has a 'role' field set as 'staff'
+        setState(() {
+          isStaff = userDoc.get('role') == 'staff';
+        });
+      }
+    }
+
+    setState(() {
+      isLoading = false; // Finish loading
+    });
   }
 
   @override
@@ -132,25 +159,25 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 ),
               ),
             ),
-             InkWell(
-              onTap: () {
-                Navigator.of(context).pop();
-                Navigator.pushNamed(context, LoginScreen.id);
-              },
-              child: ListTile(
-                leading: Icon(
-                  Icons.person,
-                  size: 16.r,
-                  color: AppColors.white,
-                ),
-                title: Text(
-                  'Staff',
-                  style: TextStyle(
-                      color: AppColors.white, fontSize: AppDimensions.normal),
+            if (!isStaff)
+              InkWell(
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.pushNamed(context, LoginScreen.id);
+                },
+                child: ListTile(
+                  leading: Icon(
+                    Icons.person,
+                    size: 16.r,
+                    color: AppColors.white,
+                  ),
+                  title: Text(
+                    'Staff',
+                    style: TextStyle(
+                        color: AppColors.white, fontSize: AppDimensions.normal),
+                  ),
                 ),
               ),
-            ),
-            
           ],
         ),
       ),

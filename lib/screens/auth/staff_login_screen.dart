@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cusit/base_widget/background.dart';
 import 'package:cusit/extensions/aspect_ratio_extension.dart';
 import 'package:cusit/screens/chat/staff/staffdashboard_screen.dart';
 import 'package:cusit/utils/app_colors.dart';
@@ -24,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool invalidCredentials = false;
   final _formKey = GlobalKey<FormState>();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  TextEditingController idController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool _passwordVisible = false;
   bool loginIndicator = false;
@@ -48,20 +47,29 @@ class _LoginScreenState extends State<LoginScreen> {
     //   )));
     // }
   }
+  void showErrorSnackbar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      duration: const Duration(seconds: 2),
+      backgroundColor: AppColors.red,
+      content: Text(
+        message,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: AppDimensions.large,
+        ),
+      ),
+    ));
+  }
 
   late bool loading;
   @override
   void initState() {
     super.initState();
     loading = true;
-      }
-
-
-
+  }
 
   @override
   Widget build(BuildContext context) {
- 
     return GestureDetector(
       onTap: () {
         FocusManager.instance.primaryFocus?.unfocus();
@@ -70,11 +78,9 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: AppColors.cusitclr,
         body: SingleChildScrollView(
           child: Column(
-            
             children: [
-              
               Padding(
-                padding:  EdgeInsets.only(top:context.height*0.12),
+                padding: EdgeInsets.only(top: context.height * 0.12),
                 child: Image.asset(
                   "assets/icons/Logosmall.png",
                   scale: 1.5,
@@ -104,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       fontSize: AppDimensions.normal,
                                       color: AppColors.cusitclr,
                                     ),
-                                    controller: idController,
+                                    controller: emailController,
                                     decoration: const InputDecoration(
                                       fillColor: Colors.transparent,
                                       filled: true,
@@ -159,7 +165,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                         ),
                                         onPressed: () {
                                           setState(() {
-                                            _passwordVisible = !_passwordVisible;
+                                            _passwordVisible =
+                                                !_passwordVisible;
                                           });
                                         },
                                       ),
@@ -193,25 +200,31 @@ class _LoginScreenState extends State<LoginScreen> {
                                     child: ElevatedButton(
                                       onPressed: () async {
                                         FocusManager.instance.primaryFocus
-                                            ?.unfocus();
+                                            ?.unfocus(); // To dismiss the keyboard
+
                                         final FormState? formStateVal =
                                             _formKey.currentState;
-                      
+
+                                        // Check if the form is valid when the user tries to submit
                                         if (formStateVal!.validate()) {
                                           setState(() {
-                                            loginIndicator = true;
+                                            loginIndicator =
+                                                true; // Show loading indicator
                                           });
-                      
+
                                           try {
+                                            // Attempt sign-in with FirebaseAuth
                                             UserCredential userCredential =
                                                 await FirebaseAuth.instance
                                                     .signInWithEmailAndPassword(
-                                              email: idController.text,
-                                              password: passwordController.text,
+                                              email: emailController.text
+                                                  .trim(), // Trim to avoid spaces
+                                              password: passwordController.text
+                                                  .trim(),
                                             );
-                      
+
                                             User? user = userCredential.user;
-                      
+
                                             if (user != null) {
                                               final prefs =
                                                   await SharedPreferences
@@ -220,8 +233,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   'loginTime',
                                                   DateTime.now()
                                                       .toIso8601String());
-                                              prefs.setString('userId', user.uid);
-                      
+                                              prefs.setString(
+                                                  'userId', user.uid);
+
                                               // Store user data in Firestore
                                               await _firestore
                                                   .collection('users')
@@ -230,48 +244,29 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 'email': user.email,
                                                 'lastLogin': DateTime.now(),
                                               });
-                      
+
+                                              // Navigate to dashboard after successful login
                                               Navigator.of(context)
                                                   .pushReplacementNamed(
                                                       StaffDashBoardScreen.id);
                                             }
                                           } on FirebaseAuthException catch (e) {
+                                            // Handle specific Firebase Auth errors
                                             if (e.code == 'user-not-found' ||
                                                 e.code == 'wrong-password') {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(SnackBar(
-                                                duration:
-                                                    const Duration(seconds: 2),
-                                                backgroundColor: AppColors.red,
-                                                content: Text(
-                                                  'Wrong Credentials..!!',
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    fontSize: AppDimensions.large,
-                                                  ),
-                                                ),
-                                              ));
+                                              showErrorSnackbar(context,
+                                                  'Invalid credentials. Please try again.');
                                             } else {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(SnackBar(
-                                                duration:
-                                                    const Duration(seconds: 2),
-                                                backgroundColor: AppColors.red,
-                                                content: Text(
-                                                  'Some error occurred. Please try again.',
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    fontSize: AppDimensions.large,
-                                                  ),
-                                                ),
-                                              ));
+                                              showErrorSnackbar(context,
+                                                  'An error occurred. Please try again.');
                                             }
                                           } finally {
                                             setState(() {
-                                              loginIndicator = false;
+                                              loginIndicator =
+                                                  false; // Hide loading indicator
                                             });
                                           }
-                      
+
                                           // Optionally, check the internet connection
                                           checkInternetConnection();
                                         }

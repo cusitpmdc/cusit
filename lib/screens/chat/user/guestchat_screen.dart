@@ -1,18 +1,17 @@
-import 'package:cusit/screens/models/schatmodel.dart';
+import 'package:cusit/extensions/aspect_ratio_extension.dart';
+import 'package:cusit/screens/dashboard/drawer_screen.dart';
+import 'package:cusit/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
-import 'package:cusit/extensions/aspect_ratio_extension.dart';
-import 'package:cusit/screens/dashboard/drawer_screen.dart';
-import 'package:cusit/utils/app_colors.dart';
 
 class GuestChatScreen extends StatefulWidget {
   static const String id = 'gchat_Screen';
 
-  final String staffId; // Add the staffId parameter to the constructor
+  final String staffId;
 
-  const GuestChatScreen({Key? key, required this.staffId, required Chat chat}) : super(key: key);
+  const GuestChatScreen({Key? key, required this.staffId}) : super(key: key);
 
   @override
   State<GuestChatScreen> createState() => _GuestChatScreenState();
@@ -33,7 +32,6 @@ class _GuestChatScreenState extends State<GuestChatScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? id = prefs.getString('guestId');
     if (id == null) {
-      // Generate a new UUID
       id = const Uuid().v4();
       await prefs.setString('guestId', id);
     }
@@ -46,7 +44,7 @@ class _GuestChatScreenState extends State<GuestChatScreen> {
     if (_controller.text.isNotEmpty && guestId != null) {
       await _firestore
           .collection('chats')
-          .doc(widget.staffId) // Chat document for specific staff member
+          .doc(widget.staffId)
           .collection('messages')
           .add({
         'text': _controller.text,

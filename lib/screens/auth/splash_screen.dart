@@ -6,8 +6,9 @@ import 'package:cusit/screens/chat/staff/staffdashboard_screen.dart';
 import 'package:cusit/screens/dashboard/dashboard_screen.dart';
 import 'package:cusit/utils/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';  // Firebase Auth import
+import 'package:firebase_auth/firebase_auth.dart'; // Firebase Auth import
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -20,7 +21,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   bool updateAvailable = false;
-  bool isStaff = false;  // Boolean to track if the user is staff
+  bool isStaff = false; // Boolean to track if the user is staff
 
   // Check for updates in Firestore
   Future<void> checkForUpdates() async {
@@ -47,21 +48,53 @@ class _SplashScreenState extends State<SplashScreen> {
     }
   }
 
-  // Check if the user is logged in and determine if they are a staff member
   Future<void> checkUserRole() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
     try {
       User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        // Check Firestore if the user is a staff member
-        final firestore = FirebaseFirestore.instance;
-        final snapshot = await firestore.collection('users').doc(user.uid).get();
+      log("User is logged in? ${user != null}");
 
-        if (snapshot.exists) {
-          final data = snapshot.data();
-          if (data != null && data['role'] == 'staff') {
+      if (user != null) {
+        String? savedRole = prefs.getString('userRole');
+
+        if (savedRole == null) {
+          final firestore = FirebaseFirestore.instance;
+          final snapshot =
+              await firestore.collection('users').doc(user.uid).get();
+
+          if (snapshot.exists) {
+            final data = snapshot.data();
+            log('User data from Firestore: $data');
+
+            if (data != null && data['role'] != null) {
+              String role = data['role'];
+
+              prefs.setString('userRole', role);
+
+              if (role == 'staff') {
+                setState(() {
+                  isStaff = true;
+                });
+                log('User is a staff member');
+              } else {
+                log('User is not a staff member');
+              }
+            } else {
+              log('No role data found for this uid in Firestore');
+            }
+          } else {
+            log('No user data found for this uid in Firestore');
+          }
+        } else {
+          log('User role retrieved from SharedPreferences: $savedRole');
+          if (savedRole == 'staff') {
             setState(() {
               isStaff = true;
             });
+            log('User is a staff member (cached)');
+          } else {
+            log('User is not a staff member (cached)');
           }
         }
       }
@@ -76,14 +109,16 @@ class _SplashScreenState extends State<SplashScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await Future.delayed(const Duration(seconds: 3));
       await checkForUpdates();
-      await checkUserRole();  // Check user role before navigating
+      await checkUserRole();
       if (mounted) {
         if (updateAvailable) {
           Navigator.pushReplacementNamed(context, UpgradeScreen.id);
         } else if (isStaff) {
-          Navigator.pushReplacementNamed(context, StaffDashBoardScreen.id);  // Navigate to Staff Dashboard if staff
+          log('Navigating to StaffDashBoardScreen');
+          Navigator.pushReplacementNamed(context, StaffDashBoardScreen.id);
         } else {
-          Navigator.pushReplacementNamed(context, DashboardScreen.id);  // Navigate to normal dashboard if not staff
+          log('Navigating to DashboardScreen');
+          Navigator.pushReplacementNamed(context, DashboardScreen.id);
         }
       }
     });
